@@ -63,5 +63,5 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
 For any inquiries or suggestions, please open an issue on the GitHub repository.
 
 ---
-
-This README provides a basic overview of the project, its features, installation guide, and running instructions. Adjust the content according to the specific details and requirements of your project.
+Authors: 
+Rongtian Larry Na
