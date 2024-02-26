@@ -1,0 +1,99 @@
+#ESG Data Aggregator and Analyzer
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Simulated ESG data for demonstration purposes
+esg_data = {
+    'Company': ['Company A', 'Company B', 'Company C', 'Company D'],
+    'Environmental Score': [85, 70, 90, 60],
+    'Social Score': [75, 80, 65, 90],
+    'Governance Score': [80, 75, 88, 65]
+}
+
+# Load data into a pandas DataFrame
+df = pd.DataFrame(esg_data)
+
+# Calculate the average ESG score for each company
+df['Average ESG Score'] = df[['Environmental Score', 'Social Score', 'Governance Score']].mean(axis=1)
+
+# Display the DataFrame
+print(df)
+
+# Plotting the average ESG scores
+plt.figure(figsize=(10, 6))
+plt.bar(df['Company'], df['Average ESG Score'], color='skyblue')
+plt.xlabel('Company')
+plt.ylabel('Average ESG Score')
+plt.title('Average ESG Scores by Company')
+plt.show()
+def import_esg_data_from_csv(file_path):
+    """Imports ESG data from a CSV file."""
+    return pd.read_csv(file_path)
+
+def export_esg_data_to_csv(dataframe, file_path):
+    """Exports analyzed ESG data to a CSV file."""
+    dataframe.to_csv(file_path, index=False)
+    from flask import Flask, request, render_template, send_file
+import pandas as pd
+import matplotlib.pyplot as plt
+import io
+import os
+
+app = Flask(__name__)
+
+@app.route('/')
+def upload_file():
+    return render_template('upload.html')
+
+@app.route('/analyze', methods=['POST'])
+def analyze_esg():
+    if request.method == 'POST':
+        # Check if the post request has the file part
+        if 'file' not in request.files:
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            return redirect(request.url)
+        if file:
+            df = pd.read_csv(file)
+            analyze_and_plot_esg_data(df)
+            output_file_path = 'analyzed_esg_data.csv'
+            export_esg_data_to_csv(df, output_file_path)
+            return render_template('analysis.html', filename=output_file_path)
+
+@app.route('/downloads/<filename>')
+def download_file(filename):
+    return send_file(filename, as_attachment=True)
+
+def analyze_and_plot_esg_data(df):
+    """Perform ESG data analysis and plot the results."""
+    df['Average ESG Score'] = df[['Environmental Score', 'Social Score', 'Governance Score']].mean(axis=1)
+    plt.figure(figsize=(10, 6))
+    plt.bar(df['Company'], df['Average ESG Score'], color='skyblue')
+    plt.xlabel('Company')
+    plt.ylabel('Average ESG Score')
+    plt.title('Average ESG Scores by Company')
+    plt.savefig('static/esg_scores.png')
+    plt.close()
+
+if __name__ == '__main__':
+    app.run(debug=True)
+import plotly.express as px
+
+def analyze_and_plot_esg_data(df):
+    """Perform ESG data analysis and plot the results with Plotly."""
+    df['Average ESG Score'] = df[['Environmental Score', 'Social Score', 'Governance Score']].mean(axis=1)
+    fig = px.bar(df, x='Company', y='Average ESG Score', color='Average ESG Score',
+                 labels={'Average ESG Score': 'Avg ESG Score'},
+                 title='Average ESG Scores by Company')
+    plot_div = fig.to_html(full_html=False)
+    return plot_div
+@app.route('/analyze', methods=['POST'])
+def analyze_esg():
+    # existing code to handle file upload
+    if file:
+        df = pd.read_csv(file)
+        plot_div = analyze_and_plot_esg_data(df)
+        output_file_path = 'analyzed_esg_data.csv'
+        export_esg_data_to_csv(df, output_file_path)
+        return render_template('analysis.html', plot_div=plot_div, filename=output_file_path)
